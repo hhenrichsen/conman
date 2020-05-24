@@ -7,6 +7,7 @@ export interface GuildConfig {
 export interface GuildSettings extends Document {
     snowflake: string;
     prefix: string;
+    managerRoles: string[];
     logChannel?: string;
     using?: Schema.Types.ObjectId[];
     config: GuildConfig;
@@ -18,6 +19,9 @@ const GuildSchema = new Schema({
         unique: true,
         index: true,
     },
+    managerRoles: [{
+       type: String,
+    }],
     prefix: {
         type: String,
         default: process.env.DEFAULT_PREFIX,
