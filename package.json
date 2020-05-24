@@ -1,0 +1,37 @@
+{
+  "name": "conman",
+  "version": "1.0.0",
+  "description": "Manages content for RPG servers.",
+  "main": "dist/Index.js",
+  "author": "Hunter Henrichsen <hunter.henrichsen@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start:watch": "nodemon --watch 'src/**/*' --ignore 'src/**/*.spec.ts' --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "bufferutil": "^4.0.1",
+    "common-tags": "^1.8.0",
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
+    "erlpack": "^0.1.3",
+    "eslint": "^7.1.0",
+    "mongodb": "^3.5.7",
+    "mongoose": "^5.9.15",
+    "ts-node": "^8.10.1",
+    "utf-8-validate": "^5.0.2",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.4.2",
+    "zlib-sync": "^0.1.6"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.7.21",
+    "@types/node": "^14.0.5",
+    "@typescript-eslint/eslint-plugin": "^3.0.0",
+    "nodemon": "^2.0.4",
+    "typescript": "^3.9.3"
+  }
+}
