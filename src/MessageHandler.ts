@@ -108,6 +108,11 @@ export default class MessageHandler {
             await Command.showErrorEmbed(command, msg.channel, 'You don\'t have permission to use that here.');
             return;
         }
+        if(command.managerOnly && msg.channel.type === "text") {
+            if(!msg.member.roles.cache.some(role => guildSettings.managerRoles.some(managerRole => managerRole === role.id))) {
+                await Command.showErrorEmbed(command, msg.channel, 'You don\'t have permission to use that here.');
+            }
+        }
         let user = await UserModel.findOne({ snowflake: msg.author.id });
         if(!user) {
             user = await UserModel.create({ snowflake: msg.author.id });

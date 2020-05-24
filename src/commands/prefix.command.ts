@@ -9,7 +9,7 @@ module.exports = {
     contexts: {
         text: true,
     },
-    requiredPermissions: ['MANAGE_GUILD'],
+    managerOnly: true,
     async execute(msg: Message, args: string[], guildSettings: GuildSettings, user: User) {
         if(args.length < 1) {
             let embed = Command.buildEmbed(this, user);

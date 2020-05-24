@@ -3,14 +3,6 @@ import {GuildSettings} from "../models/Guild";
 import {User} from "../models/User";
 const pkg = require("../../package.json");
 
-export interface CommandAssignable {
-    name: string;
-    requiredPermissions?: string[];
-    aliases?: string[];
-    contexts?: Contexts;
-    execute(msg : Message, args : string[], guildConfig : GuildSettings, user : User) : void;
-}
-
 export interface Contexts {
     text: boolean;
     dm: boolean;
@@ -22,11 +14,15 @@ export default class Command {
     public readonly aliases?: string[];
     public readonly contexts?: Contexts;
     public readonly execute : Function;
+    public readonly managerOnly: boolean;
 
     static buildEmbed(command: Command, user?: User) : MessageEmbed {
         const embed = new MessageEmbed();
         embed.setTitle(`${command.name}`);
         embed.setColor("#5E81AC");
+        if(command.managerOnly) {
+            embed.setColor("#A3BE8C")
+        }
         if(user && user.admin) {
             embed.setColor("#EBCB8B")
             embed.setFooter(`Conman v${pkg.version}\nProcessed at ${new Date().toISOString()}`);
