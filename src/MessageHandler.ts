@@ -46,22 +46,26 @@ export default class MessageHandler {
         };
     };
 
+    async getOrMakeSettings(msg: Message) {
+        let guildSettings;
+        if(GuildManager.guilds.has(msg.guild.id)) {
+            return GuildManager.guilds.get(msg.guild.id);
+        }
+        else {
+            guildSettings = await GuildModel.findOne({ snowflake: msg.guild.id });
+            GuildManager.guilds.set(msg.guild.id, guildSettings);
+            if(guildSettings === undefined || guildSettings === null) {
+                logger.warn(`Found message in unknown guild ${msg.guild.name} (${msg.guild.id}). Creating guild data.`);
+                return GuildModel.create({ snowflake: msg.guild.id });
+            }
+        }
+    }
+
     async handleMessage(msg : Message) {
         if(msg.author.bot) {
             return;
         }
-        let guildSettings;
-        if(GuildManager.guilds.has(msg.guild.id)) {
-            guildSettings = GuildManager.guilds.get(msg.guild.id);
-        }
-        else {
-            guildSettings = await GuildModel.findOne({ snowflake: msg.guild.id });
-            if(guildSettings === undefined || guildSettings === null) {
-                guildSettings = await GuildModel.create({ snowflake: msg.guild.id });
-                logger.warn(`Found message in unknown guild ${msg.guild.name} (${msg.guild.id}). Creating guild data.`);
-            }
-            GuildManager.guilds.set(msg.guild.id, guildSettings);
-        }
+        let guildSettings = await this.getOrMakeSettings(msg);
         if(!msg.content.startsWith(guildSettings.prefix)) {
             return;
         }
@@ -109,8 +113,10 @@ export default class MessageHandler {
             return;
         }
         if(command.managerOnly && msg.channel.type === "text") {
-            if(!msg.member.roles.cache.some(role => guildSettings.managerRoles.some(managerRole => managerRole === role.id))) {
+            const isManager = !msg.member.roles.cache.some(role => guildSettings.managerRoles.some(managerRole => managerRole === role.id));
+            if(!isManager && !msg.member.permissions.has("MANAGE_GUILD") || !msg.member.permissions.has("ADMINISTRATOR")) {
                 await Command.showErrorEmbed(command, msg.channel, 'You don\'t have permission to use that here.');
+                return;
             }
         }
         let user = await UserModel.findOne({ snowflake: msg.author.id });
