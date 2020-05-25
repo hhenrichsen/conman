@@ -114,9 +114,9 @@ export default class MessageHandler {
             return;
         }
         if(command.managerOnly && msg.channel.type === "text") {
-            const isManager = !msg.member.roles.cache.some(role => guildSettings.managerRoles.some(managerRole => managerRole === role.id));
-            if(!isManager && !msg.member.permissions.has("MANAGE_GUILD") || !msg.member.permissions.has("ADMINISTRATOR")) {
-                await Command.showErrorEmbed(command, msg.channel, 'You don\'t have permission to use that here.');
+            const isManager = msg.member.roles.cache.some(role => guildSettings.managerRoles.some(managerRole => managerRole === role.id));
+            if(!isManager && !(msg.member.permissions.has("MANAGE_GUILD") || msg.member.permissions.has("ADMINISTRATOR"))) {
+                await Command.showErrorEmbed(command, msg.channel, `You don't have permission to use that here.`);
                 return;
             }
         }
@@ -125,6 +125,7 @@ export default class MessageHandler {
             user = await UserModel.create({ snowflake: msg.author.id });
         }
         try {
+            msg.channel.startTyping();
             await command.execute(msg, args, guildSettings, user);
         }
         catch (error) {
@@ -136,6 +137,9 @@ export default class MessageHandler {
             errorEmbed.setFooter('Please report this to the author.');
             errorEmbed.setFooter(`Processed At: ${new Date().toISOString()}`);
             await msg.channel.send(errorEmbed);
+        }
+        finally {
+            await msg.channel.stopTyping();
         }
     };
 }
